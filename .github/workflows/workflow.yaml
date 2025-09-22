@@ -1,0 +1,17 @@
+name: Continuos Integration
+
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.
+      - name: run install, build and test
+        run: |
+          npm install
+          npm run build 
+          npm run test
