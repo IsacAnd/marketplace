@@ -1,5 +1,7 @@
 "use client";
 
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -35,5 +37,11 @@ export default function PrivateLayout({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 bg-gray-50">{children}</main>
+      <Footer />
+    </div>
+  );
 }
