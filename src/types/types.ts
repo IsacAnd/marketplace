@@ -6,6 +6,12 @@ export interface UserRegister {
   password: string;
 }
 
+export interface User {
+  token: string;
+  completeName: string;
+  email: string;
+}
+
 export interface AuthResponse {
   token: string;
   user: {

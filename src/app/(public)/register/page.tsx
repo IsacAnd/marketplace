@@ -1,8 +1,10 @@
 "use client";
 
-import { UserRegister } from "@/types/types";
+import { User, UserRegister } from "@/types/types";
 import { FormEvent, useState } from "react";
 import { register } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Register() {
   const [user, setUser] = useState<UserRegister>({
@@ -13,6 +15,8 @@ export default function Register() {
     password: "",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser((prevUser) => ({
@@ -31,7 +35,19 @@ export default function Register() {
       }
 
       const response = await register(user);
-      console.log(response);
+
+      if (!response || !response.token) {
+        return Error("Something goes wrong!");
+      }
+
+      const userData: User = {
+        token: response.token,
+        completeName: response.user.completeName,
+        email: response.user.email,
+      };
+
+      login(userData.token, userData);
+      router.push("/");
     } catch (error) {
       console.error(error);
     }

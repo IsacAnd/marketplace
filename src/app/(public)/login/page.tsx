@@ -1,11 +1,16 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { login } from "@/services/authService";
+import { login as loginService } from "@/services/authService";
+import { useAuth } from "@/context/AuthContext";
+import { User } from "@/types/types";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,8 +21,20 @@ export default function Login() {
     }
 
     try {
-      const response = await login(email, password);
-      console.log(response);
+      const response = await loginService(email, password);
+
+      if (!response || !response.token) {
+        throw new Error("Something goes wrong!");
+      }
+
+      const userData: User = {
+        token: response.token,
+        completeName: response.user.completeName,
+        email: response.user.email,
+      };
+
+      login(userData.token, userData);
+      router.push("/");
     } catch (error) {
       console.error(error);
     }
