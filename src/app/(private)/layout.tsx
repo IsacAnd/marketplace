@@ -14,13 +14,18 @@ export default function PrivateLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // se user for null, redireciona pro login
-    if (user === null) {
-      router.replace("/login");
-    } else if (user) {
+    if (!loading) {
+      if (!user) {
+        router.replace("/login");
+      }
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    if (user !== undefined) {
       setLoading(false);
     }
-  }, [user, router]);
+  }, [user]);
 
   if (loading) {
     return (

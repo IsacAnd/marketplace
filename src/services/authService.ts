@@ -19,6 +19,8 @@ export async function login(
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
+    console.log(response);
+
     return response.json();
   } catch (error) {
     throw error;
