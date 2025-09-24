@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 
 type AuthContextType = {
-  user: User | undefined;
+  user: User | null;
   login: (token: string, userData: User) => void;
   logout: () => void;
 };
@@ -14,16 +14,21 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
 
-    if (savedUser) {
-      const parsedUser: User = JSON.parse(savedUser);
-      setUser(parsedUser);
+    if (storedToken && storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
     }
+
+    setLoading(false); // indica que a verificação terminou
   }, []);
 
   const login = (token: string, userData: User) => {
@@ -36,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(undefined);
+    setUser(null);
     router.push("/login");
   };
 

@@ -1,7 +1,5 @@
-export default function Home() {
-  return (
-    <div className="app-container">
-      <h1>Olá mundo!</h1>
-    </div>
-  );
+import { redirect } from "next/navigation";
+
+export default function App() {
+  return redirect("/home");
 }
