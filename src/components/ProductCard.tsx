@@ -8,7 +8,7 @@ interface CardProps {
   description: string;
   value: number;
   amount: number;
-  image: string;
+  image?: string;
 }
 
 export default function Card({
@@ -18,15 +18,28 @@ export default function Card({
   amount,
   image,
 }: CardProps) {
+  // Imagem padrão (coloque em public/default-product.png)
+  const defaultImage = "/default-product.png";
+
   return (
     <div className="bg-white rounded-t-2xl shadow-md overflow-hidden flex flex-col">
       <div className="w-full h-48 relative">
-        <Image src={image} alt={title} fill className="object-cover" />
+        <Image
+          src={image || defaultImage}
+          alt={title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw,
+                 (max-width: 1200px) 50vw,
+                 33vw"
+        />
+
+        {/* Botão sobreposto */}
         <button
           className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center 
-                     bg-gray-200 opacity-25 rounded-full shadow-md
-                     hover:bg-gray-300 transition-colors transition-300
-                     focus:outline-none focus:ring-2 focus:ring-green-400 hover:opacity-80
+                     bg-gray-200 bg-opacity-70 rounded-full shadow-md
+                     hover:bg-gray-300 transition-colors duration-300
+                     focus:outline-none focus:ring-2 focus:ring-green-400
                      cursor-pointer"
           aria-label="Adicionar ao carrinho"
         >
