@@ -38,13 +38,34 @@ export async function createProduct(
 
 export const getAllProducts = async (token: string) => {
   try {
-    const response = await fetch(`${API_URL}/api/products/`, {
+    const response = await fetch(`${API_URL}/api/products/getAll`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
+
+    if (!response.ok) throw new Error("Houve um erro na requisição");
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllProductsByUser = async (token: string) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/products/getAllProductsByUser`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) throw new Error("Houve um erro na requisição");
 
