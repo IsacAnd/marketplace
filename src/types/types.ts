@@ -20,3 +20,15 @@ export interface AuthResponse {
     completeName: string;
   };
 }
+
+export interface Product {
+  title: string;
+  description: string;
+  value: number;
+  amount: number;
+}
+
+export interface ProductResponse extends Product {
+  _id?: string;
+  image?: string;
+}

@@ -1,14 +1,47 @@
+"use client";
+
 import Card from "@/components/ProductCard";
 import SearchBar from "@/components/SearchBar";
+import { useEffect, useState } from "react";
+import { getAllProducts } from "@/services/productService";
+import { ProductResponse } from "@/types/types";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const [products, setProducts] = useState<ProductResponse[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return router.push("/login");
+
+      const resp = await getAllProducts(token);
+      setProducts(resp);
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
-    <div className="flex flex-col w-100% h-100% bg-gray-50 text-black px-20 py-15 gap-10">
+    <div className="flex flex-col w-full min-h-screen bg-gray-50 text-black px-6 md:px-12 lg:px-20 py-8 gap-8">
       <SearchBar />
 
-      <h1 className="text-xl font-bold">Produtos</h1>
-      <div className="w-100% h-100% grid grid-cols-5 gap-5">
-        <Card />
+      <h1 className="text-xl md:text-3xl font-bold">Produtos</h1>
+
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center"></div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
+        {products.map((product) => (
+          <Card
+            key={product._id}
+            title={product.title}
+            description={product.description}
+            value={product.value}
+            amount={product.amount}
+            image={product.image} // agora o card mostra a imagem
+          />
+        ))}
       </div>
     </div>
   );

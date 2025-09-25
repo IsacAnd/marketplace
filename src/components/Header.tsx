@@ -3,6 +3,7 @@ import Image from "next/image";
 import uxstoreLogo from "@/../../public/uxstore-logo2.png";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
+import { RiHome2Fill } from "react-icons/ri";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,11 @@ export default function Header() {
       <Image src={uxstoreLogo} alt="UX Store Logo" width={70} />
 
       <ul className="flex gap-10 text-gray-600">
+        <li className="cursor-pointer hover:text-green-500 transition-colors">
+          <Link href="/home">
+            <RiHome2Fill size={21} />
+          </Link>
+        </li>
         <li className="cursor-pointer hover:text-green-500 transition-colors">
           <Link href="/profile">
             <FaUser size={18} />

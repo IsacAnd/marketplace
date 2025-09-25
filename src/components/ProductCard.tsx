@@ -1,13 +1,28 @@
-export default function Card() {
+type CardProps = {
+  title: string;
+  description: string;
+  value: number;
+  amount: number;
+  image?: string;
+};
+
+export default function Card({
+  title,
+  description,
+  value,
+  amount,
+  image,
+}: CardProps) {
   return (
-    <div className="flex flex-col h-90 rounded-2xl">
-      <div className="flex-10 bg-black">foto</div>
-      <div className="flex flex-col flex-4 bg-blue px-1">
-        <h3>Título do produto</h3>
-        <span>Descrição</span>
-        <div className="flex-1 flex items-end justify-end">
-          <h2 className="text-lg font-bold">R$1000,00</h2>
-        </div>
+    <div className="flex flex-col bg-white shadow-md rounded-lg overflow-hidden">
+      {image && (
+        <img src={image} alt={title} className="w-full h-48 object-cover" />
+      )}
+      <div className="p-4 flex flex-col gap-2">
+        <h2 className="font-bold text-lg">{title}</h2>
+        <p className="text-gray-600">{description}</p>
+        <span className="font-semibold">R$ {value}</span>
+        <span>Quantidade: {amount}</span>
       </div>
     </div>
   );
