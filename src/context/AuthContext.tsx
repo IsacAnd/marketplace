@@ -9,6 +9,7 @@ type AuthContextType = {
   user: User | null;
   login: (token: string, userData: User) => void;
   logout: () => void;
+  getToken: () => string | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,8 +46,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/login");
   };
 
+  const getToken = () => {
+    const token = localStorage.getItem("token");
+    return token;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, getToken }}>
       {children}
     </AuthContext.Provider>
   );
