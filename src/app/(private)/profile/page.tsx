@@ -4,11 +4,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
-  getAllProducts,
+  createProduct,
+  deleteProduct,
   getAllProductsByUser,
 } from "@/services/productService";
 import { Product, ProductResponse, User } from "@/types/types";
 import avatar from "@/../../public/avatar.webp";
+import { IoMdAddCircle } from "react-icons/io";
+import { FaTrash } from "react-icons/fa";
+import defaultImage from "@/../../public/default-image.webp";
+import Modal from "@/components/Modal";
 
 export default function Profile() {
   const [user, setUser] = useState<User>({
@@ -16,7 +21,16 @@ export default function Profile() {
     completeName: "",
     email: "",
   });
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    value: "",
+    amount: "",
+    image: null as File | null,
+  });
   const [products, setProducts] = useState<ProductResponse[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,24 +46,114 @@ export default function Profile() {
       if (!token) return router.push("/login");
 
       const resp = await getAllProductsByUser(token);
-      setProducts(resp);
+      if (resp && Array.isArray(resp)) {
+        setProducts(resp);
+      } else {
+        setProducts([]);
+      }
     };
 
     fetchUserProducts();
   }, [router]);
 
-  if (!user) return null;
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files && files[0]) {
+      setFormData({ ...formData, [name]: files[0] });
+      setPreview(URL.createObjectURL(files[0]));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.value ||
+      !formData.amount
+    ) {
+      return alert("Todos os campos devem ser preenchidos!");
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return router.push("/");
+
+    const product: Product = {
+      title: formData.title,
+      description: formData.description,
+      value: Number(formData.value),
+      amount: Number(formData.amount),
+    };
+
+    try {
+      const resp = await createProduct(
+        product,
+        token,
+        formData.image ?? undefined
+      );
+
+      if (resp) {
+        setProducts((prev) => [...prev, resp]);
+
+        setIsModalOpen(false);
+        setFormData({
+          title: "",
+          description: "",
+          value: "",
+          amount: "",
+          image: null,
+        });
+        setPreview(null);
+        router.push("/profile");
+        return;
+      }
+
+      return alert("Houve um erro ao adicionar o produto!");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar produto!");
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) return router.push("/login");
+
+    try {
+      const resp = await deleteProduct(id, token);
+
+      if (resp) {
+        setProducts((prev) => prev.filter((product) => product._id !== id));
+        alert("Produto deletado com sucesso!");
+        return;
+      }
+
+      alert("Houve um erro ao deletar o produto!");
+    } catch (error) {
+      throw error;
+    }
+  };
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-50 text-gray-800 px-6 md:px-12 lg:px-20 py-8 gap-8">
-      <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow-lg p-6 gap-6">
-        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-md border-4 border-blue-500">
+      <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl p-6 gap-6 border-1 border-gray-200">
+        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-md border-1 ">
           <Image
             src={avatar}
             alt="User avatar"
             width={128}
             height={128}
             className="object-cover w-full h-full"
+            sizes="(max-width: 768px) 100vw, 
+         (max-width: 1200px) 50vw, 
+         33vw"
+            priority
           />
         </div>
         <div className="flex flex-col gap-2 text-center md:text-left">
@@ -59,13 +163,21 @@ export default function Profile() {
           <p className="text-gray-600">{user.email}</p>
         </div>
       </div>
-
-      {/* Produtos do Usuário */}
       <div>
-        <h2 className="text-xl md:text-2xl font-semibold mb-4">
-          Seus Produtos
-        </h2>
-
+        <div className="flex justify-between mb-2">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4">
+            Seus Produtos
+          </h2>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex justify-center items-center bg-green-400 px-5 text-lg text-bold text-white cursor-pointer rounded-full gap-2 duration-300 hover:bg-green-500"
+          >
+            Adicionar produto
+            <span>
+              <IoMdAddCircle size={22} />
+            </span>
+          </button>
+        </div>
         {products.length === 0 ? (
           <p className="text-gray-500">Você ainda não postou nenhum produto.</p>
         ) : (
@@ -75,19 +187,16 @@ export default function Profile() {
                 key={product._id}
                 className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-4 flex flex-col gap-3"
               >
-                {/* Imagem */}
-                {product.image && (
-                  <div className="w-full h-40 relative rounded-lg overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-
-                {/* Informações */}
+                <div className="w-full h-40 relative rounded-lg overflow-hidden">
+                  <Image
+                    src={product.image ?? defaultImage}
+                    alt={product.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority
+                  />
+                </div>
                 <div className="flex flex-col gap-1">
                   <h3 className="text-lg font-semibold text-gray-900">
                     {product.title}
@@ -95,18 +204,144 @@ export default function Profile() {
                   <p className="text-gray-600 line-clamp-2">
                     {product.description}
                   </p>
-                  <p className="text-blue-600 font-bold">
-                    R$ {product.value.toFixed(2)}
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Quantidade: {product.amount}
-                  </p>
+                  <p className="text-blue-600 font-bold">R$ {product.value}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-gray-500 text-sm">
+                      Quantidade: {product.amount}
+                    </p>
+                    <button
+                      onClick={() => handleDeleteProduct(product._id!)}
+                      className="rounded-full bg-red-400 p-2 text-white duration-300 hover:bg-red-500 cursor-pointer"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Adicionar Produto
+        </h2>
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Nome do produto
+            </label>
+            <input
+              type="text"
+              name="title"
+              placeholder="Ex: Camisa Nike"
+              value={formData.title}
+              onChange={handleFormChange}
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Descrição do produto
+            </label>
+            <textarea
+              name="description"
+              placeholder="Digite a descrição..."
+              value={formData.description}
+              onChange={handleFormChange}
+              rows={3}
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none resize-none"
+              required
+            />
+          </div>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col flex-1 gap-2">
+              <label className="text-sm font-medium text-gray-700">Valor</label>
+              <input
+                type="number"
+                name="value"
+                placeholder="R$ 0,00"
+                min={1}
+                step={1}
+                value={formData.value}
+                onChange={handleFormChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                required
+              />
+            </div>
+            <div className="flex flex-col flex-1 gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                Quantidade disponível
+              </label>
+              <input
+                type="number"
+                name="amount"
+                placeholder="0"
+                min={1}
+                step={1}
+                value={formData.amount}
+                onChange={handleFormChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                required
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Imagem do produto (opcional)
+            </label>
+
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-green-400 transition">
+              {preview ? (
+                <div className="relative w-32 h-32">
+                  <Image
+                    src={preview}
+                    alt="Preview da imagem"
+                    fill
+                    className="object-cover rounded-lg"
+                    sizes="128px"
+                    priority
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, image: null });
+                      setPreview(null);
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleFormChange}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+                  <label
+                    htmlFor="imageUpload"
+                    className="text-gray-500 text-sm text-center cursor-pointer"
+                  >
+                    Clique para selecionar uma imagem
+                  </label>
+                </>
+              )}
+            </div>
+          </div>
+          <button
+            type="submit"
+            className="bg-green-500 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-600 transition transform hover:scale-[1.02] cursor-pointer"
+          >
+            Salvar Produto
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 }

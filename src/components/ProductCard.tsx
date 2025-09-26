@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { FaCartPlus } from "react-icons/fa";
 
 interface CardProps {
@@ -8,7 +8,7 @@ interface CardProps {
   description: string;
   value: number;
   amount: number;
-  image?: string;
+  image: string | StaticImageData;
 }
 
 export default function Card({
