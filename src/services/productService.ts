@@ -115,7 +115,7 @@ export const editProduct = async (
     const response = await fetch(`${API_URL}/api/products/${id}`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${token}`, // Não colocar Content-Type com FormData
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     });

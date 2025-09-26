@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getAllProducts } from "@/services/productService";
 import { ProductResponse } from "@/types/types";
 import { useRouter } from "next/navigation";
+import defaultImage from "@/../../public/default-image.webp";
 
 export default function Home() {
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -18,6 +19,7 @@ export default function Home() {
 
       const resp = await getAllProducts(token);
       setProducts(resp);
+      console.log(resp);
     };
 
     fetchProducts();
@@ -39,7 +41,7 @@ export default function Home() {
             description={product.description}
             value={product.value}
             amount={product.amount}
-            image={product.image} // agora o card mostra a imagem
+            image={product.image ?? defaultImage}
           />
         ))}
       </div>

@@ -1,13 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import Image from "next/image";
-import { getAllProductsByUser } from "@/services/productService";
-import { ProductResponse, User } from "@/types/types";
+import {
+  createProduct,
+  deleteProduct,
+  getAllProductsByUser,
+} from "@/services/productService";
+import { Product, ProductResponse, User } from "@/types/types";
 import avatar from "@/../../public/avatar.webp";
 import { IoMdAddCircle } from "react-icons/io";
-import Modal from "@/components/Modal"; // importe o modal
+import { FaTrash } from "react-icons/fa";
+import defaultImage from "@/../../public/default-image.webp";
+import Modal from "@/components/Modal";
 
 export default function Profile() {
   const [user, setUser] = useState<User>({
@@ -20,9 +32,11 @@ export default function Profile() {
     description: "",
     value: "",
     amount: "",
+    image: null as File | null,
   });
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,7 +52,11 @@ export default function Profile() {
       if (!token) return router.push("/login");
 
       const resp = await getAllProductsByUser(token);
-      setProducts(resp);
+      if (resp && Array.isArray(resp)) {
+        setProducts(resp);
+      } else {
+        setProducts([]);
+      }
     };
 
     fetchUserProducts();
@@ -47,25 +65,85 @@ export default function Profile() {
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files && files[0]) {
+      setFormData({ ...formData, [name]: files[0] });
+      setPreview(URL.createObjectURL(files[0]));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.description.trim()) {
-      return alert("Preencha todos os campos de texto!");
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.value ||
+      !formData.amount
+    ) {
+      return alert("Todos os campos devem ser preenchidos!");
     }
 
-    if (Number(formData.value) <= 0) {
-      return alert("O valor deve ser maior que zero!");
-    }
+    const token = localStorage.getItem("token");
+    if (!token) return router.push("/");
 
-    if (Number(formData.amount) <= 0) {
-      return alert("A quantidade deve ser maior que zero!");
-    }
+    const product: Product = {
+      title: formData.title,
+      description: formData.description,
+      value: Number(formData.value),
+      amount: Number(formData.amount),
+    };
 
-    console.log(formData);
+    try {
+      const resp = await createProduct(
+        product,
+        token,
+        formData.image ?? undefined
+      );
+
+      if (resp) {
+        setProducts((prev) => [...prev, resp]);
+
+        setIsModalOpen(false);
+        setFormData({
+          title: "",
+          description: "",
+          value: "",
+          amount: "",
+          image: null,
+        });
+        setPreview(null);
+        router.push("/profile");
+        return;
+      }
+
+      return alert("Houve um erro ao adicionar o produto!");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar produto!");
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) return router.push("/login");
+
+    try {
+      const resp = await deleteProduct(id, token);
+
+      if (resp) {
+        setProducts((prev) => prev.filter((product) => product._id !== id));
+        alert("Produto deletado com sucesso!");
+        return;
+      }
+
+      alert("Houve um erro ao deletar o produto!");
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (
@@ -78,6 +156,10 @@ export default function Profile() {
             width={128}
             height={128}
             className="object-cover w-full h-full"
+            sizes="(max-width: 768px) 100vw, 
+         (max-width: 1200px) 50vw, 
+         33vw"
+            priority
           />
         </div>
         <div className="flex flex-col gap-2 text-center md:text-left">
@@ -88,7 +170,7 @@ export default function Profile() {
         </div>
       </div>
       <div>
-        <div className="flex justify-between">
+        <div className="flex justify-between mb-2">
           <h2 className="text-xl md:text-2xl font-semibold mb-4">
             Seus Produtos
           </h2>
@@ -111,16 +193,16 @@ export default function Profile() {
                 key={product._id}
                 className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-4 flex flex-col gap-3"
               >
-                {product.image && (
-                  <div className="w-full h-40 relative rounded-lg overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
+                <div className="w-full h-40 relative rounded-lg overflow-hidden">
+                  <Image
+                    src={product.image ?? defaultImage}
+                    alt={product.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority
+                  />
+                </div>
                 <div className="flex flex-col gap-1">
                   <h3 className="text-lg font-semibold text-gray-900">
                     {product.title}
@@ -128,12 +210,18 @@ export default function Profile() {
                   <p className="text-gray-600 line-clamp-2">
                     {product.description}
                   </p>
-                  <p className="text-blue-600 font-bold">
-                    R$ {product.value.toFixed(2)}
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    Quantidade: {product.amount}
-                  </p>
+                  <p className="text-blue-600 font-bold">R$ {product.value}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-gray-500 text-sm">
+                      Quantidade: {product.amount}
+                    </p>
+                    <button
+                      onClick={() => handleDeleteProduct(product._id!)}
+                      className="rounded-full bg-red-400 p-2 text-white duration-300 hover:bg-red-500 cursor-pointer"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -203,6 +291,53 @@ export default function Profile() {
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
                 required
               />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Imagem do produto (opcional)
+            </label>
+
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-green-400 transition">
+              {preview ? (
+                <div className="relative w-32 h-32">
+                  <Image
+                    src={preview}
+                    alt="Preview da imagem"
+                    fill
+                    className="object-cover rounded-lg"
+                    sizes="128px"
+                    priority
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, image: null });
+                      setPreview(null);
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleFormChange}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+                  <label
+                    htmlFor="imageUpload"
+                    className="text-gray-500 text-sm text-center cursor-pointer"
+                  >
+                    Clique para selecionar uma imagem
+                  </label>
+                </>
+              )}
             </div>
           </div>
           <button
