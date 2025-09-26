@@ -4,6 +4,7 @@ import Image, { StaticImageData } from "next/image";
 import { FaCartPlus } from "react-icons/fa";
 
 interface CardProps {
+  id: string | undefined;
   title: string;
   description: string;
   value: number;
@@ -12,6 +13,7 @@ interface CardProps {
 }
 
 export default function Card({
+  id,
   title,
   description,
   value,
@@ -19,6 +21,25 @@ export default function Card({
   image,
 }: CardProps) {
   const defaultImage = "/default-product.png";
+
+  const addToCart = () => {
+    const storedCart = localStorage.getItem("cart");
+    const cart = storedCart ? JSON.parse(storedCart) : [];
+
+    // verifica se já existe no carrinho
+    const existing = cart.find(
+      (item: { id: string | undefined }) => item.id === id
+    );
+
+    if (existing) {
+      existing.amount += 1;
+    } else {
+      cart.push({ id, title, value, amount: 1, image });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Produto adicionado ao carrinho!");
+  };
 
   return (
     <div
@@ -38,11 +59,11 @@ export default function Card({
         />
         <button
           className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center
-                     bg-gray-200 bg-opacity-70 rounded-full shadow-sm opacity-25
-                     hover:bg-gray-300 transition-colors duration-300
-                     focus:outline-none focus:ring-2 focus:ring-green-400 hover:opacity-80  
+                     bg-gray-200 rounded-full shadow-sm opacity-25 transition-colors duration-300
+                     hover:opacity-80  
                      cursor-pointer"
           aria-label="Adicionar ao carrinho"
+          onClick={addToCart}
         >
           <FaCartPlus className="text-gray-700" size={18} />
         </button>

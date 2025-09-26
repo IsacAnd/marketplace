@@ -11,7 +11,7 @@ import {
 import { Product, ProductResponse, User } from "@/types/types";
 import avatar from "@/../../public/avatar.webp";
 import { IoMdAddCircle } from "react-icons/io";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import defaultImage from "@/../../public/default-image.webp";
 import Modal from "@/components/Modal";
 
@@ -46,7 +46,7 @@ export default function Profile() {
       if (!token) return router.push("/login");
 
       const resp = await getAllProductsByUser(token);
-      if (resp && Array.isArray(resp)) {
+      if (resp) {
         setProducts(resp);
       } else {
         setProducts([]);
@@ -98,7 +98,7 @@ export default function Profile() {
       );
 
       if (resp) {
-        setProducts((prev) => [...prev, resp]);
+        setProducts((prev) => [...prev, resp.product]);
 
         setIsModalOpen(false);
         setFormData({
@@ -201,7 +201,7 @@ export default function Profile() {
                   <h3 className="text-lg font-semibold text-gray-900">
                     {product.title}
                   </h3>
-                  <p className="text-gray-600 line-clamp-2">
+                  <p className="text-gray-600 line-clamp-1">
                     {product.description}
                   </p>
                   <p className="text-blue-600 font-bold">R$ {product.value}</p>
@@ -209,12 +209,24 @@ export default function Profile() {
                     <p className="text-gray-500 text-sm">
                       Quantidade: {product.amount}
                     </p>
-                    <button
-                      onClick={() => handleDeleteProduct(product._id!)}
-                      className="rounded-full bg-red-400 p-2 text-white duration-300 hover:bg-red-500 cursor-pointer"
-                    >
-                      <FaTrash />
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          router.push(`/editProduct?id=${product._id}`)
+                        }
+                        className="rounded-full bg-green-300 p-3 text-white duration-300 hover:bg-green-400 cursor-pointer"
+                        title="Editar produto"
+                      >
+                        <FaEdit size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product._id!)}
+                        className="rounded-full bg-red-400 p-3 text-white duration-300 hover:bg-red-500 cursor-pointer"
+                        title="Deletar produto"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
