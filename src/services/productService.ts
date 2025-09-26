@@ -20,7 +20,7 @@ export async function createProduct(
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/products/`, {
+    const response = await fetch(`${API_URL}/api/products/createProduct`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -77,13 +77,16 @@ export const getAllProductsByUser = async (token: string) => {
 
 export const getProductById = async (id: string, token: string) => {
   try {
-    const response = await fetch(`${API_URL}/api/products/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/api/products/getProductById/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) throw new Error("Produto não encontrado");
 
@@ -93,7 +96,7 @@ export const getProductById = async (id: string, token: string) => {
   }
 };
 
-export const editProduct = async (
+export const updateProduct = async (
   id: string,
   product: Product,
   token: string,
@@ -112,13 +115,16 @@ export const editProduct = async (
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/products/${id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
+    const response = await fetch(
+      `${API_URL}/api/products/updateProduct/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
 
     if (!response.ok) throw new Error("Erro ao editar produto");
 
@@ -130,12 +136,15 @@ export const editProduct = async (
 
 export const deleteProduct = async (id: string, token: string) => {
   try {
-    const response = await fetch(`${API_URL}/api/products/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/api/products/deleteProduct/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) throw new Error("Erro ao excluir produto");
 
