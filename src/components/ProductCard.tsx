@@ -18,11 +18,14 @@ export default function Card({
   amount,
   image,
 }: CardProps) {
-  // Imagem padrão (coloque em public/default-product.png)
   const defaultImage = "/default-product.png";
 
   return (
-    <div className="bg-white rounded-t-2xl shadow-md overflow-hidden flex flex-col">
+    <div
+      className="bg-white shadow-sm overflow-hidden flex flex-col 
+                 transform transition-transform duration-300 
+                 hover:scale-105 cursor-pointer"
+    >
       <div className="w-full h-48 relative">
         <Image
           src={image || defaultImage}
@@ -33,28 +36,20 @@ export default function Card({
                  (max-width: 1200px) 50vw,
                  33vw"
         />
-
-        {/* Botão sobreposto */}
         <button
-          className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center 
-                     bg-gray-200 bg-opacity-70 rounded-full shadow-md
+          className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center
+                     bg-gray-200 bg-opacity-70 rounded-full shadow-sm opacity-25
                      hover:bg-gray-300 transition-colors duration-300
-                     focus:outline-none focus:ring-2 focus:ring-green-400
+                     focus:outline-none focus:ring-2 focus:ring-green-400 hover:opacity-80  
                      cursor-pointer"
           aria-label="Adicionar ao carrinho"
         >
           <FaCartPlus className="text-gray-700" size={18} />
         </button>
       </div>
-
-      {/* Conteúdo */}
       <div className="p-4 flex flex-col flex-1">
         <h2 className="text-lg font-semibold">{title}</h2>
-
-        {/* Descrição */}
         <p className="text-sm text-gray-600 line-clamp-3">{description}</p>
-
-        {/* Preço + botão comprar */}
         <div className="flex mt-auto justify-between items-end">
           <div>
             <p className="text-md font-bold">R$ {value.toFixed(2)}</p>
