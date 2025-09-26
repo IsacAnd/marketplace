@@ -23,7 +23,7 @@ export default function Home() {
     };
 
     fetchProducts();
-  }, []);
+  }, [router]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-50 text-black px-6 md:px-12 lg:px-20 py-8 gap-8">
