@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { User } from "@/types/types";
 import { useRouter } from "next/navigation";
 
+import toast from "react-hot-toast";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

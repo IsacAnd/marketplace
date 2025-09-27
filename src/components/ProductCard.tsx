@@ -1,7 +1,10 @@
 "use client";
 
 import Image, { StaticImageData } from "next/image";
+import { useRouter } from "next/navigation";
 import { FaCartPlus } from "react-icons/fa";
+
+import toast from "react-hot-toast";
 
 interface CardProps {
   id: string | undefined;
@@ -21,6 +24,7 @@ export default function Card({
   image,
 }: CardProps) {
   const defaultImage = "/default-product.png";
+  const router = useRouter();
 
   const addToCart = () => {
     const storedCart = localStorage.getItem("cart");
@@ -38,11 +42,17 @@ export default function Card({
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Produto adicionado ao carrinho!");
+    toast.success("Produto adicionado com sucesso!");
+  };
+
+  const goToProduct = () => {
+    if (!id) return;
+    router.push(`/productView/${id}`);
   };
 
   return (
     <div
+      onClick={goToProduct}
       className="bg-white shadow-sm overflow-hidden flex flex-col 
                  transform transition-transform duration-300 
                  hover:scale-105 cursor-pointer"
@@ -63,7 +73,10 @@ export default function Card({
                      hover:opacity-80  
                      cursor-pointer"
           aria-label="Adicionar ao carrinho"
-          onClick={addToCart}
+          onClick={(e) => {
+            e.stopPropagation();
+            addToCart();
+          }}
         >
           <FaCartPlus className="text-gray-700" size={18} />
         </button>

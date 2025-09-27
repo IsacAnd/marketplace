@@ -7,6 +7,8 @@ import { getAllProductsByUser, updateProduct } from "@/services/productService";
 import { ProductResponse, Product } from "@/types/types";
 import defaultImage from "@/../../public/default-image.webp";
 
+import toast from "react-hot-toast";
+
 interface FormData {
   title: string;
   description: string;
@@ -88,14 +90,14 @@ export default function EditProductPage() {
         formData.image ?? undefined
       );
       if (resp) {
-        alert("Produto atualizado com sucesso!");
+        toast.success("Produto editado com sucesso!");
         router.push("/profile");
       } else {
-        alert("Erro ao atualizar o produto.");
+        toast.error("Erro ao editar o produto");
       }
     } catch (error) {
       console.error(error);
-      alert("Erro ao atualizar produto.");
+      toast.error("Erro ao editar o produto");
     }
   };
 

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaShoppingCart, FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 
+import toast from "react-hot-toast";
+
 type CartItem = {
   id: string;
   title: string;

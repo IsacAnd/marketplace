@@ -14,6 +14,7 @@ import { IoMdAddCircle } from "react-icons/io";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import defaultImage from "@/../../public/default-image.webp";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 export default function Profile() {
   const [user, setUser] = useState<User>({
@@ -109,14 +110,16 @@ export default function Profile() {
           image: null,
         });
         setPreview(null);
+        toast.success("Produto adicionado com sucesso");
         router.push("/profile");
         return;
       }
 
-      return alert("Houve um erro ao adicionar o produto!");
+      toast.success("Produto adicionado com sucesso");
+      return;
     } catch (error) {
       console.error(error);
-      alert("Erro ao salvar produto!");
+      toast.error("Erro ao salvar produto!");
     }
   };
 
@@ -130,11 +133,11 @@ export default function Profile() {
 
       if (resp) {
         setProducts((prev) => prev.filter((product) => product._id !== id));
-        alert("Produto deletado com sucesso!");
+        toast.success("Produto deletado com sucesso");
         return;
       }
 
-      alert("Houve um erro ao deletar o produto!");
+      toast.error("Houve um erro ao deletar o produto!");
     } catch (error) {
       throw error;
     }
