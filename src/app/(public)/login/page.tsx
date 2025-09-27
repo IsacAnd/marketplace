@@ -5,8 +5,9 @@ import { login as loginService } from "@/services/authService";
 import { useAuth } from "@/context/AuthContext";
 import { User } from "@/types/types";
 import { useRouter } from "next/navigation";
-
 import toast from "react-hot-toast";
+import { ZodError } from "zod";
+import { loginSchema } from "@/schemas/loginSchema";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,8 +18,18 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      alert("Preencha todos os campos corretamente!");
+    try {
+      loginSchema.parse({ email, password });
+    } catch (err: unknown) {
+      if (err instanceof ZodError) {
+        const firstError = err.flatten().fieldErrors;
+        const firstMessage =
+          (Object.values(firstError).flat()[0] as string) ||
+          "Erro no formulário";
+        toast.error(firstMessage);
+      } else {
+        toast.error("Erro desconhecido no formulário");
+      }
       return;
     }
 
@@ -26,7 +37,8 @@ export default function Login() {
       const response = await loginService(email, password);
 
       if (!response || !response.token) {
-        throw new Error("Something goes wrong!");
+        toast.error(response?.message || "Erro ao fazer login");
+        return;
       }
 
       const userData: User = {
@@ -36,8 +48,14 @@ export default function Login() {
       };
 
       login(userData.token, userData);
+      toast.success("Login realizado com sucesso!");
       router.push("/");
-    } catch (error) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao fazer login";
+      toast.error(message);
       console.error(error);
     }
   };
@@ -83,10 +101,10 @@ export default function Login() {
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
-              id="terms"
+              id="remember"
               className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-200"
             />
-            <label htmlFor="terms" className="text-sm text-gray-600">
+            <label htmlFor="remember" className="text-sm text-gray-600">
               Lembrar-me
             </label>
           </div>

@@ -19,6 +19,7 @@ export interface AuthResponse {
     email: string;
     completeName: string;
   };
+  message?: string;
 }
 
 export interface Product {
