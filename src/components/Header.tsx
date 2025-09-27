@@ -6,15 +6,12 @@ import { IoLogOut } from "react-icons/io5";
 import { RiHome2Fill } from "react-icons/ri";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { logout } = useAuth();
-  const router = useRouter();
 
   const handleLogout = () => {
     logout();
-    router.push("/login");
   };
 
   return (
@@ -38,8 +35,8 @@ export default function Header() {
           </Link>
         </li>
         <li className="cursor-pointer hover:text-green-500 transition-colors">
-          <Link href="/logout" onClick={handleLogout}>
-            <IoLogOut size={20} />
+          <Link href="/login">
+            <IoLogOut size={20} onClick={handleLogout} />
           </Link>
         </li>
       </ul>

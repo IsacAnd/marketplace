@@ -17,8 +17,12 @@ export default function Home() {
       const token = localStorage.getItem("token");
       if (!token) return router.push("/login");
 
-      const resp = await getAllProducts(token);
-      setProducts(resp);
+      try {
+        const resp = await getAllProducts(token);
+        setProducts(resp);
+      } catch (error) {
+        throw error;
+      }
     };
 
     fetchProducts();
