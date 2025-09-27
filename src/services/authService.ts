@@ -12,19 +12,16 @@ export async function login(
     body: JSON.stringify({ email, password }),
   };
 
-  try {
-    const response = await fetch(`${API_URL}/api/auth/login`, init);
+  const response = await fetch(`${API_URL}/api/auth/login`, init);
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    console.log(response);
-
-    return response.json();
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    throw new Error(
+      data.error || data.message || `Erro HTTP: ${response.status}`
+    );
   }
+
+  return data;
 }
 
 export async function register(user: UserRegister): Promise<AuthResponse> {
@@ -34,15 +31,12 @@ export async function register(user: UserRegister): Promise<AuthResponse> {
     body: JSON.stringify(user),
   };
 
-  try {
-    const response = await fetch(`${API_URL}/api/auth/register`, init);
+  const response = await fetch(`${API_URL}/api/auth/register`, init);
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    throw new Error(data.error || `Erro HTTP: ${response.status}`);
   }
+
+  return data;
 }

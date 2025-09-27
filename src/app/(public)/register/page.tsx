@@ -1,10 +1,15 @@
 "use client";
 
-import { User, UserRegister } from "@/types/types";
 import { FormEvent, useState } from "react";
-import { register } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { register } from "@/services/authService";
+import { User, UserRegister } from "@/types/types";
+
+import { IMaskInput } from "react-imask";
+import { ZodError } from "zod";
+import toast from "react-hot-toast";
+import { registerSchema } from "@/schemas/registerSchema";
 
 export default function Register() {
   const [user, setUser] = useState<UserRegister>({
@@ -19,25 +24,38 @@ export default function Register() {
   const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      [e.target.name]: e.target.value,
-    }));
+    setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      if (user.password !== confirmPassword) {
-        alert("Senhas não correspondem!");
-        return;
+      registerSchema.parse({ ...user, confirmPassword });
+    } catch (err: unknown) {
+      if (err instanceof ZodError) {
+        const firstError = err.flatten().fieldErrors;
+        const firstMessage =
+          (Object.values(firstError).flat()[0] as string) ||
+          "Erro no formulário";
+        toast.error(firstMessage);
+      } else {
+        toast.error("Erro desconhecido no formulário");
       }
+      return;
+    }
 
-      const response = await register(user);
+    try {
+      const userToSend = {
+        ...user,
+        cpf: user.cpf.replace(/\D/g, ""),
+        phone: user.phone.replace(/\D/g, ""),
+      };
+
+      const response = await register(userToSend);
 
       if (!response || !response.token) {
-        return Error("Something goes wrong!");
+        toast.error(response?.message || "Erro ao cadastrar usuário");
       }
 
       const userData: User = {
@@ -47,9 +65,14 @@ export default function Register() {
       };
 
       login(userData.token, userData);
+      toast.success("Cadastro realizado com sucesso!");
       router.push("/");
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao cadastrar usuário";
+      toast.error(message);
     }
   };
 
@@ -61,86 +84,85 @@ export default function Register() {
             Cadastro
           </h2>
 
+          {/* CPF */}
           <div className="flex flex-col gap-1">
             <label htmlFor="cpf" className="font-medium text-gray-600">
               CPF
             </label>
-            <input
-              onChange={handleChange}
+            <IMaskInput
+              mask="000.000.000-00"
               value={user.cpf}
-              type="text"
-              name="cpf"
-              id="cpf"
+              onAccept={(value: string) => setUser({ ...user, cpf: value })}
               placeholder="000.000.000-00"
-              required
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+              required
             />
           </div>
 
+          {/* Nome completo */}
           <div className="flex flex-col gap-1">
             <label htmlFor="completeName" className="font-medium text-gray-600">
               Nome completo
             </label>
             <input
-              onChange={handleChange}
-              value={user.completeName}
               type="text"
               name="completeName"
-              id="completeName"
+              value={user.completeName}
+              onChange={handleChange}
               placeholder="Digite seu nome completo"
               required
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
             />
           </div>
 
+          {/* Email */}
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="font-medium text-gray-600">
               Email
             </label>
             <input
-              onChange={handleChange}
-              value={user.email}
               type="email"
               name="email"
-              id="email"
+              value={user.email}
+              onChange={handleChange}
               placeholder="Digite seu email"
               required
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
             />
           </div>
 
+          {/* Telefone */}
           <div className="flex flex-col gap-1">
             <label htmlFor="phone" className="font-medium text-gray-600">
               Telefone
             </label>
-            <input
-              onChange={handleChange}
+            <IMaskInput
+              mask="(00) 00000-0000"
               value={user.phone}
-              type="tel"
-              name="phone"
-              id="phone"
+              onAccept={(value: string) => setUser({ ...user, phone: value })}
               placeholder="(00) 00000-0000"
-              required
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+              required
             />
           </div>
 
+          {/* Senha */}
           <div className="flex flex-col gap-1">
             <label htmlFor="password" className="font-medium text-gray-600">
               Senha
             </label>
             <input
-              onChange={handleChange}
-              value={user.password}
               type="password"
               name="password"
-              id="password"
+              value={user.password}
+              onChange={handleChange}
               placeholder="Digite sua senha"
               required
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
             />
           </div>
 
+          {/* Confirma senha */}
           <div className="flex flex-col gap-1">
             <label
               htmlFor="confirmPassword"
@@ -149,10 +171,10 @@ export default function Register() {
               Confirme sua senha
             </label>
             <input
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              value={confirmPassword}
               type="password"
-              id="confirmPassword"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Digite novamente sua senha"
               required
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
