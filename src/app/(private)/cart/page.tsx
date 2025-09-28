@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaShoppingCart, FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 
-import toast from "react-hot-toast";
+import Image from "next/image";
+import uxstoreTemplate from "@/../../public/uxstoretemplate2.png";
 
 type CartItem = {
   id: string;
@@ -66,7 +67,14 @@ export default function Cart() {
 
       {/* Lista de produtos */}
       {cart.length === 0 ? (
-        <p className="text-gray-600 text-lg">Seu carrinho está vazio.</p>
+        <div className="w-full flex flex-col justify-center items-center ">
+          <p>Seu carrinho está vazio!</p>
+          <Image
+            src={uxstoreTemplate}
+            width={400}
+            alt="uxstoretemplate2"
+          ></Image>
+        </div>
       ) : (
         <div className="flex flex-col gap-6">
           {cart.map((item) => (
