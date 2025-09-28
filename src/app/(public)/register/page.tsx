@@ -11,6 +11,9 @@ import { ZodError } from "zod";
 import toast from "react-hot-toast";
 import { registerSchema } from "@/schemas/registerSchema";
 
+import Image from "next/image";
+import uxstoreTemplate from "@/../../public/uxstoretemplate.png";
+
 export default function Register() {
   const [user, setUser] = useState<UserRegister>({
     cpf: "",
@@ -78,7 +81,11 @@ export default function Register() {
 
   return (
     <div className="w-screen h-screen bg-gray-50 flex justify-center items-center px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl p-8 shadow-lg">
+      <div className="absolute z-0 overflow-hidden">
+        <Image src={uxstoreTemplate} width={800} alt="uxstoretemplate"></Image>
+      </div>
+
+      <div className="relative w-full max-w-sm bg-white/90 rounded-2xl p-8 shadow-lg z-10 backdrop-blur-md">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <h2 className="text-center text-2xl font-bold text-gray-700">
             Cadastro
