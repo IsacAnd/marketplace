@@ -9,6 +9,9 @@ import toast from "react-hot-toast";
 import { ZodError } from "zod";
 import { loginSchema } from "@/schemas/loginSchema";
 
+import Image from "next/image";
+import uxstoreTemplate from "@/../../public/uxstoretemplate2.png";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,6 +65,9 @@ export default function Login() {
 
   return (
     <div className="w-screen h-screen bg-gray-50 flex justify-center items-center px-4">
+      <div>
+        <Image src={uxstoreTemplate} alt="UX Store Logo" width={450} />
+      </div>
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 shadow-lg">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <h2 className="text-center text-2xl font-bold text-gray-700">
@@ -111,7 +117,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-600 transition cursor-pointer"
+            className="w-full bg-green-400 text-white font-semibold py-2.5 rounded-lg hover:bg-green-500 transition cursor-pointer"
           >
             Entrar
           </button>
