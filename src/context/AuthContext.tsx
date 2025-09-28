@@ -2,11 +2,11 @@
 
 import { User } from "@/types/types";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
-import { createContext } from "react";
+import { useContext, useEffect, useState, createContext } from "react";
 
 type AuthContextType = {
   user: User | null;
+  loading: boolean;
   login: (token: string, userData: User) => void;
   logout: () => void;
   getToken: () => string | null;
@@ -16,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,6 +28,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       setUser(null);
     }
+
+    setLoading(false); // terminou de checar
   }, []);
 
   const login = (token: string, userData: User) => {
@@ -44,12 +47,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getToken = () => {
-    const token = localStorage.getItem("token");
-    return token;
+    return localStorage.getItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, getToken }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, getToken }}>
       {children}
     </AuthContext.Provider>
   );
