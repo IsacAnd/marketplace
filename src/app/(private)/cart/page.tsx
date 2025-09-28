@@ -83,7 +83,7 @@ export default function Cart() {
               className="flex items-center gap-6 bg-white rounded-xl shadow-md p-4"
             >
               {item.image && (
-                <img
+                <Image
                   src={item.image}
                   alt={item.title}
                   className="w-20 h-20 object-cover rounded-lg"
