@@ -83,8 +83,6 @@ export default function Register() {
           <h2 className="text-center text-2xl font-bold text-gray-700">
             Cadastro
           </h2>
-
-          {/* CPF */}
           <div className="flex flex-col gap-1">
             <label htmlFor="cpf" className="font-medium text-gray-600">
               CPF
@@ -98,8 +96,6 @@ export default function Register() {
               required
             />
           </div>
-
-          {/* Nome completo */}
           <div className="flex flex-col gap-1">
             <label htmlFor="completeName" className="font-medium text-gray-600">
               Nome completo
@@ -114,8 +110,6 @@ export default function Register() {
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
             />
           </div>
-
-          {/* Email */}
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="font-medium text-gray-600">
               Email
@@ -131,7 +125,6 @@ export default function Register() {
             />
           </div>
 
-          {/* Telefone */}
           <div className="flex flex-col gap-1">
             <label htmlFor="phone" className="font-medium text-gray-600">
               Telefone
@@ -145,8 +138,6 @@ export default function Register() {
               required
             />
           </div>
-
-          {/* Senha */}
           <div className="flex flex-col gap-1">
             <label htmlFor="password" className="font-medium text-gray-600">
               Senha
@@ -161,8 +152,6 @@ export default function Register() {
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
             />
           </div>
-
-          {/* Confirma senha */}
           <div className="flex flex-col gap-1">
             <label
               htmlFor="confirmPassword"
@@ -180,14 +169,12 @@ export default function Register() {
               className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
             />
           </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-600 transition"
+            className="w-full bg-green-400 text-white font-semibold py-2.5 rounded-lg hover:bg-green-500 transition cursor-pointer"
           >
             Cadastrar
           </button>
-
           <p className="text-center text-sm text-gray-500">
             Já possui conta?{" "}
             <a
