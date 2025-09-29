@@ -32,7 +32,8 @@ Projeto de e-commerce desenvolvido com **Next.js**, **React** e **TailwindCSS**,
 │   ├── context/        # Context API (Auth, Cart, etc.)
 │   ├── services/       # Integração com backend (API calls)
 │   ├── types/          # Tipagens TypeScript
-│   └── utils/          # Funções auxiliares
+│   └── schemas/        # Validações do Zod
+│   └── types/          # Interfaces usadas     
 ├── tailwind.config.js  # Configuração do TailwindCSS
 ├── package.json
 └── README.md
