@@ -32,6 +32,7 @@ export default function Profile() {
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -46,11 +47,17 @@ export default function Profile() {
 
       if (!token) return router.push("/login");
 
-      const resp = await getAllProductsByUser(token);
-      if (resp) {
-        setProducts(resp);
-      } else {
-        setProducts([]);
+      try {
+        const resp = await getAllProductsByUser(token);
+        if (resp) {
+          setProducts(resp);
+        } else {
+          setProducts([]);
+        }
+      } catch (error) {
+        throw error;
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -142,6 +149,14 @@ export default function Profile() {
       throw error;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-500">
+        Carregando...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-50 text-gray-800 px-6 md:px-12 lg:px-20 py-8 gap-8">

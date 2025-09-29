@@ -30,7 +30,6 @@ export default function Card({
     const storedCart = localStorage.getItem("cart");
     const cart = storedCart ? JSON.parse(storedCart) : [];
 
-    // verifica se já existe no carrinho
     const existing = cart.find(
       (item: { id: string | undefined }) => item.id === id
     );

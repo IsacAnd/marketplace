@@ -59,13 +59,10 @@ export default function Cart() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 px-6 md:px-12 lg:px-20 py-10 gap-8">
-      {/* Header */}
       <div className="flex items-center gap-3 text-2xl font-bold">
         <FaShoppingCart className="w-7 h-7 text-blue-500" />
         <h1>Carrinho de Compras</h1>
       </div>
-
-      {/* Lista de produtos */}
       {cart.length === 0 ? (
         <div className="w-full flex flex-col justify-center items-center ">
           <p>Seu carrinho está vazio!</p>
@@ -84,6 +81,8 @@ export default function Cart() {
             >
               {item.image && (
                 <Image
+                  width={20}
+                  height={20}
                   src={item.image}
                   alt={item.title}
                   className="w-20 h-20 object-cover rounded-lg"
@@ -118,8 +117,6 @@ export default function Cart() {
           ))}
         </div>
       )}
-
-      {/* Resumo */}
       {cart.length > 0 && (
         <div className="mt-auto bg-white p-6 rounded-xl shadow-lg flex flex-col gap-4">
           <div className="flex justify-between text-lg font-semibold">
