@@ -71,6 +71,6 @@ npm run dev
 - Crie um arquivo .env.local na raiz do projeto com:
 
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=https://uxstore-backend-1.onrender.com
 NEXTAUTH_SECRET=seu_token_aqui
 ```
