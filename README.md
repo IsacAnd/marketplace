@@ -48,7 +48,7 @@ Projeto de e-commerce desenvolvido com **Next.js**, **React** e **TailwindCSS**,
 
 ### Pré-requisitos
 
-- Node.js 18+
+- Node.js 20
 - npm ou yarn
 
 ### Instalação
