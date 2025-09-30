@@ -76,7 +76,6 @@ export default function Login() {
             <h2 className="text-center text-2xl font-bold text-gray-700">
               Login
             </h2>
-
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="font-medium text-gray-600">
                 Email
@@ -91,7 +90,6 @@ export default function Login() {
                 className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
               />
             </div>
-
             <div className="flex flex-col gap-2">
               <label htmlFor="password" className="font-medium text-gray-600">
                 Senha
@@ -106,7 +104,6 @@ export default function Login() {
                 className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
               />
             </div>
-
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -117,14 +114,12 @@ export default function Login() {
                 Lembrar-me
               </label>
             </div>
-
             <button
               type="submit"
               className="w-full bg-green-400 text-white font-semibold py-2.5 rounded-lg hover:bg-green-500 transition cursor-pointer"
             >
               Entrar
             </button>
-
             <p className="text-center text-sm text-gray-500">
               Não possui conta?{" "}
               <a
