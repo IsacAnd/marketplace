@@ -56,7 +56,6 @@ export default function CreateProductPage() {
         className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6"
       >
         <h2 className="text-2xl font-bold text-gray-800">Criar Produto</h2>
-
         <input
           type="text"
           name="title"
@@ -66,7 +65,6 @@ export default function CreateProductPage() {
           className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
-
         <textarea
           name="description"
           value={product.description}
@@ -75,7 +73,6 @@ export default function CreateProductPage() {
           className="border border-gray-300 rounded-lg p-3 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
-
         <div className="flex gap-4">
           <input
             type="number"
@@ -96,14 +93,12 @@ export default function CreateProductPage() {
             required
           />
         </div>
-
         <input
           type="file"
           accept="image/*"
           onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
           className="border border-gray-300 rounded-lg p-2"
         />
-
         <button
           type="submit"
           className={`bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition ${
@@ -113,7 +108,6 @@ export default function CreateProductPage() {
         >
           {loading ? "Criando..." : "Criar Produto"}
         </button>
-
         {message && <p className="text-center text-gray-700">{message}</p>}
       </form>
     </div>

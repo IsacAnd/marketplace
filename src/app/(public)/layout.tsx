@@ -14,12 +14,10 @@ export default function PublicLayout({
 
   useEffect(() => {
     if (user) {
-      // usuário logado não deve acessar páginas públicas
       router.replace("/home");
     }
   }, [user, router]);
 
-  // enquanto verifica o user, evita renderizar conteúdo público
   if (user) {
     return (
       <div className="flex h-screen items-center justify-center">

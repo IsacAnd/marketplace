@@ -58,7 +58,7 @@ export default function Register() {
       const response = await register(userToSend);
 
       if (!response || !response.token) {
-        toast.error(response?.message || "Erro ao cadastrar usuário");
+        return toast.error(response?.message || "Erro ao cadastrar usuário");
       }
 
       const userData: User = {

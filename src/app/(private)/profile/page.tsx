@@ -321,7 +321,6 @@ export default function Profile() {
             <label className="text-sm font-medium text-gray-700">
               Imagem do produto (opcional)
             </label>
-
             <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-green-400 transition">
               {preview ? (
                 <div className="relative w-32 h-32">

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getAllProductsByUser, updateProduct } from "@/services/productService";
 import { ProductResponse, Product } from "@/types/types";
-import defaultImage from "@/../../public/default-image.webp";
 
 import toast from "react-hot-toast";
 
